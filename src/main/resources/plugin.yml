@@ -1,0 +1,21 @@
+name: CustomEnchantPlugin
+main: com.example.customenchant.CustomEnchantPlugin
+version: 1.0.0
+api-version: 1.21.4
+description: Adds a lightning custom enchantment example.
+commands:
+  lightningenchant:
+    description: Applies the Lightning custom enchantment to the held weapon.
+    usage: /<command> [level]
+    permission: customenchant.lightning
+  sigil:
+    description: Applies the table 기반 각인 효과 또는 목록을 확인합니다.
+    usage: /<command> [list|id] [level]
+    permission: customenchant.sigil
+permissions:
+  customenchant.lightning:
+    description: Allows applying the Lightning enchantment via command.
+    default: op
+  customenchant.sigil:
+    description: Allows granting 커스텀 각인 인첸트.
+    default: op
