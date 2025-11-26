@@ -47,3 +47,29 @@
 3. `sigil list`로 각인 효과를 확인하고, `/sigil <id> [레벨]` 명령으로 표에 있는 각인을 장비에 부여합니다.
 4. Lightning 무기로 몹을 타격하면 번개가 소환되고 레벨에 따라 추가 피해가 들어갑니다.
 5. 오른쪽 클릭을 하면 검기(파티클 웨이브)가 전방으로 10블록 뻗으며 맞닿은 몹에게 추가 피해를 줍니다. 쿨다운은 2초입니다.
+
+## Python 통계 헬퍼 패키지
+루트에 추가된 `simple_stats` 패키지는 외부 의존성 없이 기본적인 기술 통계를 계산하는 경량 도구입니다. `mean`, `median`, `mode`,
+`variance`, `standard_deviation`, `summary` 함수를 제공합니다.
+
+### 사용법
+1. 프로젝트 루트에서 파이썬 인터프리터를 실행합니다.
+   ```bash
+   python
+   ```
+2. 필요한 함수를 임포트하고 사용합니다.
+   ```python
+   from simple_stats import summary, mean
+
+   summary([1, 2, 2, 5])
+   # {'count': 4, 'min': 1.0, 'max': 5.0, 'mean': 2.5, 'median': 2.0,
+   #  'mode': [2.0], 'variance': 2.25, 'standard_deviation': 1.5}
+
+   mean({10, 20, 30})
+   # 20.0
+   ```
+
+3. 유닛 테스트는 다음 명령으로 실행할 수 있습니다.
+   ```bash
+   python -m unittest discover -s tests -p "test_*.py"
+   ```
