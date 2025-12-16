@@ -7,6 +7,7 @@ from typing import Tuple
 import pygame
 
 from .constants import BLACK, FPS, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
+from .boss import Boss
 from .sprites import Bullet, Enemy, Player
 
 
@@ -23,6 +24,7 @@ class SpaceShooter:
         self.all_sprites = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.bosses = pygame.sprite.Group()
 
         self.player = Player((SCREEN_WIDTH // 2, SCREEN_HEIGHT - 60))
         self.all_sprites.add(self.player)
@@ -30,6 +32,7 @@ class SpaceShooter:
         self.score = 0
         self.enemy_spawn_delay = 900  # milliseconds
         self.last_enemy_spawn = pygame.time.get_ticks()
+        self.next_boss_score = 100
 
     def run(self) -> None:
         while True:
@@ -50,6 +53,7 @@ class SpaceShooter:
         pressed_keys = pygame.key.get_pressed()
         self.all_sprites.update(pressed_keys)
         self.spawn_enemy()
+        self.spawn_boss()
         self.handle_collisions()
 
     def render(self) -> None:
@@ -75,6 +79,15 @@ class SpaceShooter:
         self.all_sprites.add(enemy)
         self.enemies.add(enemy)
 
+    def spawn_boss(self) -> None:
+        if self.score < self.next_boss_score or self.bosses:
+            return
+
+        boss = Boss((SCREEN_WIDTH // 2, 80))
+        self.bosses.add(boss)
+        self.all_sprites.add(boss)
+        self.next_boss_score += 100
+
     def shoot(self) -> None:
         bullet = Bullet(self.player.rect.midtop)
         self.register_bullet(bullet)
@@ -87,8 +100,15 @@ class SpaceShooter:
         hits = pygame.sprite.groupcollide(self.enemies, self.bullets, True, True)
         self.score += len(hits) * 10
 
+        boss_hits = pygame.sprite.groupcollide(self.bosses, self.bullets, False, True)
+        for boss, bullets in boss_hits.items():
+            defeated = boss.take_damage(len(bullets) * 5)
+            if defeated:
+                self.score += 50
+
         collisions = pygame.sprite.spritecollide(self.player, self.enemies, True)
-        if collisions:
+        boss_collision = pygame.sprite.spritecollide(self.player, self.bosses, True)
+        if collisions or boss_collision:
             self.player.lives -= 1
             if self.player.lives <= 0:
                 self.game_over()
@@ -115,3 +135,8 @@ class SpaceShooter:
         lives_text = self.font.render(f"Lives: {self.player.lives}", True, WHITE)
         self.screen.blit(score_text, (12, 10))
         self.screen.blit(lives_text, (SCREEN_WIDTH - 120, 10))
+
+        if self.bosses:
+            boss = next(iter(self.bosses))
+            health_text = self.font.render(f"Boss HP: {boss.health}", True, WHITE)
+            self.screen.blit(health_text, (SCREEN_WIDTH // 2 - 50, 10))
