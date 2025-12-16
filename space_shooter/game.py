@@ -1,4 +1,4 @@
-"""Game loop, event handling, and gameplay systems."""
+"""게임 루프, 이벤트 처리, 게임 플레이 시스템 구현."""
 
 import random
 import sys
@@ -12,7 +12,7 @@ from .sprites import Bullet, Enemy, Player
 
 
 class SpaceShooter:
-    """Manage the gameplay loop and game state."""
+    """게임 루프와 상태를 관리하는 클래스."""
 
     def __init__(self) -> None:
         pygame.init()
@@ -30,7 +30,7 @@ class SpaceShooter:
         self.all_sprites.add(self.player)
 
         self.score = 0
-        self.enemy_spawn_delay = 900  # milliseconds
+        self.enemy_spawn_delay = 900  # 밀리초 단위 스폰 지연 시간
         self.last_enemy_spawn = pygame.time.get_ticks()
         self.next_boss_score = 100
 

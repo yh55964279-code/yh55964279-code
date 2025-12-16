@@ -1,4 +1,4 @@
-"""Sprite classes for the space shooter game."""
+"""비행 슈팅 게임에서 사용하는 스프라이트 클래스."""
 
 from dataclasses import dataclass
 from typing import Tuple
@@ -15,7 +15,7 @@ class Speed:
 
 
 class Player(pygame.sprite.Sprite):
-    """Player-controlled spaceship sprite."""
+    """플레이어가 조작하는 우주선 스프라이트."""
 
     def __init__(self, pos: Tuple[int, int]):
         super().__init__()
@@ -49,7 +49,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Bullet(pygame.sprite.Sprite):
-    """Bullet fired by the player."""
+    """플레이어가 발사하는 탄환 스프라이트."""
 
     def __init__(self, pos: Tuple[int, int]):
         super().__init__()
@@ -65,7 +65,7 @@ class Bullet(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
-    """Enemy ship descending from the top of the screen."""
+    """화면 상단에서 내려오는 적 우주선 스프라이트."""
 
     def __init__(self, pos: Tuple[int, int], speed_y: int):
         super().__init__()

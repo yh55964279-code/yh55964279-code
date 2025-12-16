@@ -1,4 +1,4 @@
-"""Constants and color definitions for the space shooter game."""
+"""비행 슈팅 게임에서 사용하는 상수와 색상 정의."""
 
 SCREEN_WIDTH = 480
 SCREEN_HEIGHT = 640

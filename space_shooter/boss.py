@@ -1,4 +1,4 @@
-"""Boss sprite for milestone score events."""
+"""점수 이정표마다 등장하는 보스 스프라이트."""
 
 from typing import Tuple
 
@@ -8,7 +8,7 @@ from .constants import RED, SCREEN_WIDTH, YELLOW
 
 
 class Boss(pygame.sprite.Sprite):
-    """A tougher enemy that appears at score milestones."""
+    """점수 이정표마다 등장하는 강한 적 스프라이트."""
 
     def __init__(self, pos: Tuple[int, int], health: int = 60):
         super().__init__()
@@ -26,7 +26,7 @@ class Boss(pygame.sprite.Sprite):
             self.direction *= -1
 
     def take_damage(self, amount: int) -> bool:
-        """Apply damage and return True if the boss is defeated."""
+        """피해를 적용하고 보스가 쓰러지면 True를 반환."""
         self.health -= amount
         if self.health <= 0:
             self.kill()

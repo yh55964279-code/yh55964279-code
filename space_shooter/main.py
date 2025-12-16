@@ -1,9 +1,9 @@
-"""Entry point helpers for launching the game."""
+"""게임을 실행하기 위한 진입점 헬퍼."""
 
 from .game import SpaceShooter
 
 
 def main() -> None:
-    """Create the game instance and start the loop."""
+    """게임 인스턴스를 생성하고 루프를 시작."""
     game = SpaceShooter()
     game.run()

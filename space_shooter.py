@@ -1,11 +1,11 @@
-"""Arcade-style vertical scrolling shooter built with pygame.
+"""pygame로 만든 아케이드 스타일의 세로 스크롤 슈팅 게임.
 
-Run the game with:
+게임 실행 방법:
     python space_shooter.py
 
-If you cannot open a window (e.g., on a headless server), set SDL_VIDEODRIVER=dummy
-before running to disable the display requirement. The game uses simple colored shapes
-instead of external assets for portability.
+화면을 열 수 없는 환경(예: 헤드리스 서버)에서는 SDL_VIDEODRIVER=dummy 를
+설정한 뒤 실행하면 디스플레이 요구 사항을 비활성화할 수 있습니다. 외부 에셋 대신
+단순한 색상 도형을 사용해 휴대성을 높였습니다.
 """
 
 from space_shooter.main import main
