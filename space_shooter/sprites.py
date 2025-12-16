@@ -1,0 +1,80 @@
+"""Sprite classes for the space shooter game."""
+
+from dataclasses import dataclass
+from typing import Tuple
+
+import pygame
+
+from .constants import BLUE, RED, SCREEN_HEIGHT, SCREEN_WIDTH, YELLOW
+
+
+@dataclass
+class Speed:
+    x: int
+    y: int
+
+
+class Player(pygame.sprite.Sprite):
+    """Player-controlled spaceship sprite."""
+
+    def __init__(self, pos: Tuple[int, int]):
+        super().__init__()
+        self.image = pygame.Surface((40, 48))
+        self.image.fill(BLUE)
+        pygame.draw.polygon(
+            self.image,
+            YELLOW,
+            [(20, 0), (0, 48), (40, 48)],
+        )
+        self.rect = self.image.get_rect(center=pos)
+        self.speed = Speed(6, 6)
+        self.lives = 3
+
+    def update(
+        self, pressed_keys: pygame.key.ScancodeWrapper | None = None
+    ) -> None:
+        if pressed_keys is None:
+            return
+
+        if pressed_keys[pygame.K_LEFT]:
+            self.rect.x -= self.speed.x
+        if pressed_keys[pygame.K_RIGHT]:
+            self.rect.x += self.speed.x
+        if pressed_keys[pygame.K_UP]:
+            self.rect.y -= self.speed.y
+        if pressed_keys[pygame.K_DOWN]:
+            self.rect.y += self.speed.y
+
+        self.rect.clamp_ip(pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
+
+
+class Bullet(pygame.sprite.Sprite):
+    """Bullet fired by the player."""
+
+    def __init__(self, pos: Tuple[int, int]):
+        super().__init__()
+        self.image = pygame.Surface((6, 16))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect(center=pos)
+        self.speed_y = -12
+
+    def update(self, *_: object) -> None:
+        self.rect.y += self.speed_y
+        if self.rect.bottom < 0:
+            self.kill()
+
+
+class Enemy(pygame.sprite.Sprite):
+    """Enemy ship descending from the top of the screen."""
+
+    def __init__(self, pos: Tuple[int, int], speed_y: int):
+        super().__init__()
+        self.image = pygame.Surface((34, 34))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect(center=pos)
+        self.speed_y = speed_y
+
+    def update(self, *_: object) -> None:
+        self.rect.y += self.speed_y
+        if self.rect.top > SCREEN_HEIGHT:
+            self.kill()
