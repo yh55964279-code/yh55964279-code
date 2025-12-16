@@ -1,5 +1,6 @@
 """게임 루프, 이벤트 처리, 게임 플레이 시스템 구현."""
 
+import math
 import random
 import sys
 from typing import Tuple
@@ -8,7 +9,7 @@ import pygame
 
 from .constants import BLACK, FPS, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
 from .boss import Boss
-from .sprites import Bullet, Enemy, Player
+from .sprites import Bullet, Enemy, EnemyBullet, Player
 
 
 class SpaceShooter:
@@ -23,6 +24,7 @@ class SpaceShooter:
 
         self.all_sprites = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
+        self.enemy_bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bosses = pygame.sprite.Group()
 
@@ -33,6 +35,10 @@ class SpaceShooter:
         self.enemy_spawn_delay = 900  # 밀리초 단위 스폰 지연 시간
         self.last_enemy_spawn = pygame.time.get_ticks()
         self.next_boss_score = 100
+        self.enemy_shot_delay = 1100
+        self.last_enemy_shot = pygame.time.get_ticks()
+        self.boss_shot_delay = 950
+        self.last_boss_shot = pygame.time.get_ticks()
 
     def run(self) -> None:
         while True:
@@ -54,6 +60,8 @@ class SpaceShooter:
         self.all_sprites.update(pressed_keys)
         self.spawn_enemy()
         self.spawn_boss()
+        self.enemy_fire()
+        self.boss_fire()
         self.handle_collisions()
 
     def render(self) -> None:
@@ -96,9 +104,54 @@ class SpaceShooter:
         self.all_sprites.add(bullet)
         self.bullets.add(bullet)
 
+    def register_enemy_bullet(self, bullet: EnemyBullet) -> None:
+        self.all_sprites.add(bullet)
+        self.enemy_bullets.add(bullet)
+
+    def enemy_fire(self) -> None:
+        """화면에 적이 있을 때 주기적으로 탄막을 발사."""
+
+        now = pygame.time.get_ticks()
+        if now - self.last_enemy_shot < self.enemy_shot_delay:
+            return
+        if not self.enemies:
+            return
+
+        enemy = random.choice(self.enemies.sprites())
+        bullet = EnemyBullet(enemy.rect.midbottom, speed=(0, 7))
+        self.register_enemy_bullet(bullet)
+        self.last_enemy_shot = now
+
+    def boss_fire(self) -> None:
+        """보스가 존재할 때 점수에 비례한 탄막 개수를 발사."""
+
+        if not self.bosses:
+            return
+
+        now = pygame.time.get_ticks()
+        if now - self.last_boss_shot < self.boss_shot_delay:
+            return
+
+        boss = next(iter(self.bosses))
+        barrage_count = max(1, self.score // 100)
+        spread_angle = 50
+        for index in range(barrage_count):
+            if barrage_count == 1:
+                angle_deg = 90
+            else:
+                angle_deg = 90 - spread_angle / 2 + (spread_angle * index) / (barrage_count - 1)
+            angle_rad = math.radians(angle_deg)
+            dx = math.cos(angle_rad) * 6
+            dy = math.sin(angle_rad) * 6
+            bullet = EnemyBullet(boss.rect.midbottom, speed=(dx, dy))
+            self.register_enemy_bullet(bullet)
+
+        self.last_boss_shot = now
+
     def handle_collisions(self) -> None:
         hits = pygame.sprite.groupcollide(self.enemies, self.bullets, True, True)
-        self.score += len(hits) * 10
+        if not self.bosses:
+            self.score += len(hits) * 10
 
         boss_hits = pygame.sprite.groupcollide(self.bosses, self.bullets, False, True)
         for boss, bullets in boss_hits.items():
@@ -107,8 +160,9 @@ class SpaceShooter:
                 self.score += 50
 
         collisions = pygame.sprite.spritecollide(self.player, self.enemies, True)
+        bullet_hits = pygame.sprite.spritecollide(self.player, self.enemy_bullets, True)
         boss_collision = pygame.sprite.spritecollide(self.player, self.bosses, True)
-        if collisions or boss_collision:
+        if collisions or boss_collision or bullet_hits:
             self.player.lives -= 1
             if self.player.lives <= 0:
                 self.game_over()

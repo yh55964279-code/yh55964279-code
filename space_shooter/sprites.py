@@ -64,6 +64,23 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 
+class EnemyBullet(pygame.sprite.Sprite):
+    """적과 보스가 발사하는 탄막 스프라이트."""
+
+    def __init__(self, pos: Tuple[int, int], speed: Tuple[float, float]):
+        super().__init__()
+        self.image = pygame.Surface((8, 16))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect(center=pos)
+        self.speed_x, self.speed_y = speed
+
+    def update(self, *_: object) -> None:
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+        if self.rect.top > SCREEN_HEIGHT or self.rect.right < 0 or self.rect.left > SCREEN_WIDTH:
+            self.kill()
+
+
 class Enemy(pygame.sprite.Sprite):
     """화면 상단에서 내려오는 적 우주선 스프라이트."""
 
